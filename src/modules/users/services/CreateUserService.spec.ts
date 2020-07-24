@@ -5,14 +5,17 @@ import CreateUserService from './CreateUserService';
 import FakeBCryptHashProvider from '../providers/HashProvider/fakes/FakeHashProvider';
 
 describe('CreateUser', () => {
-  it('should be able to create a new user', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const fakeHashProvider = new FakeBCryptHashProvider();
-    const createUser = new CreateUserService(
-      fakeUsersRepository,
-      fakeHashProvider,
-    );
+  let fakeUsersRepository: FakeUsersRepository;
+  let fakeHashProvider: FakeBCryptHashProvider;
+  let createUser: CreateUserService;
 
+  beforeEach(() => {
+    fakeUsersRepository = new FakeUsersRepository();
+    fakeHashProvider = new FakeBCryptHashProvider();
+    createUser = new CreateUserService(fakeUsersRepository, fakeHashProvider);
+  });
+
+  it('should be able to create a new user', async () => {
     const user = await createUser.execute({
       name: 'John Doe',
       email: 'john@doe.com',
@@ -23,14 +26,6 @@ describe('CreateUser', () => {
   });
 
   it('should not be able to create a new user with same e-mail from another', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const fakeHashProvider = new FakeBCryptHashProvider();
-
-    const createUser = new CreateUserService(
-      fakeUsersRepository,
-      fakeHashProvider,
-    );
-
     await createUser.execute({
       name: 'John Doe',
       email: 'john@doe.com',

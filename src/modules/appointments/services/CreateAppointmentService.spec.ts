@@ -4,12 +4,15 @@ import FakeAppointmentsRepository from '../repositories/fakes/FakeAppointmentsRe
 import CreateAppoinmentService from './CreateAppointmentService';
 
 describe('CreateAppointment', () => {
-  it('should be able to create a new appointment', async () => {
-    const fakeAppointmentsRepository = new FakeAppointmentsRepository();
-    const createAppointment = new CreateAppoinmentService(
-      fakeAppointmentsRepository,
-    );
+  let fakeAppointmentsRepository: FakeAppointmentsRepository;
+  let createAppointment: CreateAppoinmentService;
 
+  beforeEach(() => {
+    fakeAppointmentsRepository = new FakeAppointmentsRepository();
+    createAppointment = new CreateAppoinmentService(fakeAppointmentsRepository);
+  });
+
+  it('should be able to create a new appointment', async () => {
     const appointment = await createAppointment.execute({
       date: new Date(),
       provider_id: '1234341434',
@@ -19,12 +22,7 @@ describe('CreateAppointment', () => {
     expect(appointment.provider_id).toBe('1234341434');
   });
 
-   it('should not be able to create two appointments on the same time', async () => {
-    const fakeAppointmentsRepository = new FakeAppointmentsRepository();
-    const createAppointment = new CreateAppoinmentService(
-      fakeAppointmentsRepository,
-    );
-
+  it('should not be able to create two appointments on the same time', async () => {
     const appointmentDate = new Date(2020, 4, 10, 11);
 
     await createAppointment.execute({
@@ -36,7 +34,7 @@ describe('CreateAppointment', () => {
       createAppointment.execute({
         date: appointmentDate,
         provider_id: '1234341434',
-      })
+      }),
     ).rejects.toBeInstanceOf(AppError);
-   });
+  });
 });
